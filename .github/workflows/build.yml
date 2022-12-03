@@ -106,6 +106,13 @@ jobs:
 
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
 
+    - name:  Sign Build
+      if: runner.os == 'Windows'
+      shell: cmd
+      run:   |
+        signtool sign /fd sha256 C:\$GITHUB_WORKSPACE\\build\vsp\vsp
+        signtool verify /pa C:\$GITHUB_WORKSPACE\\build\vsp\vsp
+        
     - name: Deploy Windows
       if: runner.os == 'Windows'
       shell: bash
