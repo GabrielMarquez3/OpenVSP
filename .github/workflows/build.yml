@@ -117,7 +117,7 @@ jobs:
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\vsp
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE
         Remove-Item -Recurse -Force certificate
 
     - name: Deploy Windows 
