@@ -106,14 +106,6 @@ jobs:
 
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
 
-    - name: Deploy Windows 
-      if: runner.os == 'Windows'
-      shell: bash
-      run:   |
-        cd $GITHUB_WORKSPACE\\build
-        cmake --build --config Release -j 2
-        ls
-
     # add a verification step
     - name:  Sign Build
       env: 
@@ -125,8 +117,25 @@ jobs:
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\vsp.vcxproj
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\vsp.exe
         Remove-Item -Recurse -Force certificate
+
+    - name: Deploy Windows 
+      if: runner.os == 'Windows'
+      shell: bash
+      run:   |
+        cd $GITHUB_WORKSPACE\\build
+        cmake --build . --target package --config Release -j 2
+
+        ZIPFILE=OpenVSP*.zip
+        VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
+        WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
+        
+        DEPLOY_FILE=OpenVSP-${VSPVER}-${WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
+        cp $ZIPFILE $DEPLOY_FILE
+        cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
+        
+        ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1) 
 
     # - name:  Build MacOS
     #   if: runner.os == 'macos'
