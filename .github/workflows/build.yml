@@ -121,7 +121,8 @@ jobs:
         cp $ZIPFILE $DEPLOY_FILE
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
 
-        cd vsp/vsp
+        cd vsp
+        cd vsp.dir
         ls
         
         ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1) 
