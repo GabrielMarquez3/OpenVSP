@@ -106,24 +106,6 @@ jobs:
 
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
 
-    # add a verification step
-    - name:  Sign Build
-      env: 
-        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run:   |
-        New-Item -ItemType directory -Path certificate
-        Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
-        certutil -decode certificate\certificate.txt certificate\certificate.pfx
-
-        cd $env:GITHUB_WORKSPACE\build\vsp
-        ls 
-
-        $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp
-        Remove-Item -Recurse -Force certificate
-
     - name: Deploy Windows 
       if: runner.os == 'Windows'
       shell: bash
@@ -139,7 +121,25 @@ jobs:
         cp $ZIPFILE $DEPLOY_FILE
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
         
-        ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1)
+        ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1) 
+
+    # add a verification step
+    - name:  Sign Build
+      env: 
+        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run:   |
+        New-Item -ItemType directory -Path certificate
+        Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
+        certutil -decode certificate\certificate.txt certificate\certificate.pfx
+
+        cd $env:GITHUB_WORKSPACE\build
+        ls 
+
+        $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp
+        Remove-Item -Recurse -Force certificate
 
     # - name:  Build MacOS
     #   if: runner.os == 'macos'
