@@ -107,13 +107,19 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
 
     - name:  Sign Build
+      env: 
+        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
       if: runner.os == 'Windows'
       shell: pwsh
       run:   |
+        New-Item -ItemType directory -Path certificate
+        Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
+        certutil -decode certificate\certificate.txt certificate\certificate.pfx
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 C:\$env:GITHUB_WORKSPACE\\build\vsp\vsp
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx C:\$env:GITHUB_WORKSPACE\\build\vsp\vsp
+        Remove-Item -Recurse -Force certificate
 
-    - name: Deploy Windows
+    - name: Deploy Windows 
       if: runner.os == 'Windows'
       shell: bash
       run:   |
