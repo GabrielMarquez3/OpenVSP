@@ -98,7 +98,7 @@ jobs:
       shell: bash
       run:   |
         mkdir build buildlibs artifacts
-        cd $GITHUB_WORKSPACE\\wrong
+        cd $GITHUB_WORKSPACE\\buildlibs
         cmake -DCMAKE_BUILD_TYPE=Release -A $BUILD_ARCH ..\\Libraries
 
         cmake --build . --config Release -j 2
@@ -117,7 +117,7 @@ jobs:
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build
         Remove-Item -Recurse -Force certificate
 
     - name: Deploy Windows 
