@@ -112,19 +112,7 @@ jobs:
       run:   |
         cd $GITHUB_WORKSPACE\\build
         cmake --build . --target package --config Release -j 2
-
-        ZIPFILE=OpenVSP*.zip
-        VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
-        WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
-        
-        DEPLOY_FILE=OpenVSP-${VSPVER}-${WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
-        cp $ZIPFILE $DEPLOY_FILE
-        cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
-
-        unzip $DEPLOY_FILE
         ls
-        
-        ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1) 
 
     # add a verification step
     - name:  Sign Build
