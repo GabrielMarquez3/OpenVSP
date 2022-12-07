@@ -93,7 +93,7 @@ jobs:
         
     #     ls $DEPLOY_FILE && (echo "DEB CREATION SUCCESSFUL" && exit 0) || (echo "DEB CREATION FAILED" && exit 1)
 
-    - name:  Build Windows
+    - name:  Build Libraries Windows
       if: runner.os == 'Windows'
       shell: bash
       run:   |
@@ -102,29 +102,14 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release -A $BUILD_ARCH ..\\Libraries
 
         cmake --build . --config Release -j 2
-
-        cd $GITHUB_WORKSPACE\\build
-        cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
-
-    # add a verification step
-    - name:  Sign Build
-      env: 
-        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run:   |
-        New-Item -ItemType directory -Path certificate
-        Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
-        certutil -decode certificate\certificate.txt certificate\certificate.pfx
-        $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe
-        Remove-Item -Recurse -Force certificate
-            
-    - name: Deploy Windows 
+  
+    - name: Build Windows 
       if: runner.os == 'Windows'
       shell: bash
       run:   |
         cd $GITHUB_WORKSPACE\\build
+
+        cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
         cmake --build . --target package --config Release -j 2
 
         ls
@@ -138,6 +123,24 @@ jobs:
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
 
         ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1)
+
+    # add a verification step
+    - name:  Sign Build
+      env: 
+        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run:   |
+        New-Item -ItemType directory -Path certificate
+        Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
+        certutil -decode certificate\certificate.txt certificate\certificate.pfx
+        $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vspaero.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsploads.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vspscript.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vspviewer.exe
+        Remove-Item -Recurse -Force certificate
 
     # - name:  Build MacOS
     #   if: runner.os == 'macos'
