@@ -102,20 +102,20 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release -A $BUILD_ARCH ..\\Libraries
 
         cmake --build . --config Release -j 2
-        cd $GITHUB_WORKSPACE\\build
-
-        cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
 
         ls
-        cd vsp
-        ls
-
-        cmake --build . --target package --config Release -j 2
 
     - name: Deploy Windows 
       if: runner.os == 'Windows'
       shell: bash
       run:   |
+        cd $GITHUB_WORKSPACE\\build
+
+        cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
+        cmake --build . --target package --config Release -j 2
+
+        ls
+
         ZIPFILE=OpenVSP*.zip
         VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
         WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
@@ -123,8 +123,6 @@ jobs:
         DEPLOY_FILE=OpenVSP-${VSPVER}-${WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
         cp $ZIPFILE $DEPLOY_FILE
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
-
-        ls
 
         ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1) 
 
