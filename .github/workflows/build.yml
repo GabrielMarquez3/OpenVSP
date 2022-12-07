@@ -106,6 +106,8 @@ jobs:
 
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
 
+        ls
+
     - name: Deploy Windows 
       if: runner.os == 'Windows'
       shell: bash
