@@ -103,9 +103,13 @@ jobs:
 
         cmake --build . --config Release -j 2
 
+        cd $GITHUB_WORKSPACE\\build
+
         ls
         cd vsp
         ls
+
+
 
     - name: Deploy Windows 
       if: runner.os == 'Windows'
