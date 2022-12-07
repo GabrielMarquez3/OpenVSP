@@ -128,18 +128,24 @@ jobs:
     - name:  Sign Build
       env: 
         CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
+        CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
       if: runner.os == 'Windows'
       shell: pwsh
       run:   |
         New-Item -ItemType directory -Path certificate
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
+        Set-Content -Path certificate\certificate_cer.txt -Value $env:CODESIGN_BASE64CER
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
+        certutil -decode certificate\certificate_cer.txt certificate\certificate.cer
+        certutil -user -addstore Root certificate.cer
+        
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vspaero.exe
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsploads.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp_aero\Solver\Release\vspaero.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp_aero\Adb2Load\Release\vsploads.exe
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vspscript.exe
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vspviewer.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp_aero\Viewer\Release\vspviewer.exe
+
         Remove-Item -Recurse -Force certificate
 
     # - name:  Build MacOS
