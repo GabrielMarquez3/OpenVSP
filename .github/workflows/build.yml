@@ -134,11 +134,10 @@ jobs:
       run:   |
         New-Item -ItemType directory -Path certificate
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
-        Set-Content -Path certificate\certificate_cer.txt -Value $env:CODESIGN_BASE64CER
+        Set-Content -Path certificate\certCER.txt -Value $env:CODESIGN_BASE64CER
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
-        certutil -decode certificate\certificate_cer.txt certificate\certificate.cer
-        certutil -user -addstore Root certificate.cer
-        
+        certutil -decode certificate\certCER.txt certificate\certCER.cer
+
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp_aero\Solver\Release\vspaero.exe
