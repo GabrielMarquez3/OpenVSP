@@ -147,7 +147,9 @@ jobs:
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vspscript.exe
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp_aero\Viewer\Release\vspviewer.exe
 
-        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe $env:GITHUB_WORKSPACE\build\vsp_aero\Solver\Release\vspaero.exe `
+        $env:GITHUB_WORKSPACE\build\vsp_aero\Adb2Load\Release\vsploads.exe $env:GITHUB_WORKSPACE\build\vsp\Release\vspscript.exe `
+        $env:GITHUB_WORKSPACE\build\vsp_aero\Viewer\Release\vspviewer.exe
 
         Remove-Item -Recurse -Force certificate
 
