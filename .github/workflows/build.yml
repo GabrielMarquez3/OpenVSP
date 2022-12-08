@@ -138,6 +138,8 @@ jobs:
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
         certutil -decode certificate\certCER.txt certificate\certCER.cer
 
+        certutil -user -addstore Root certificate\certCER.cer
+
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp_aero\Solver\Release\vspaero.exe
