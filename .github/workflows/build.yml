@@ -149,8 +149,8 @@ jobs:
       run:   |
         cd $GITHUB_WORKSPACE\\build
 
-        cmake --target package
-        
+        cmake --package
+
         ZIPFILE=OpenVSP*.zip
         VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
         WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
