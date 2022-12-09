@@ -140,7 +140,7 @@ jobs:
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspscript.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspviewer.exe
 
-        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsp.exe `
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vsp.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspaero.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vsploads.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspscript.exe `
