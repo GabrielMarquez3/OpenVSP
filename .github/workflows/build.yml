@@ -134,7 +134,7 @@ jobs:
         certutil -addstore Root certificate\certCER.cer
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsp.exe `
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vsp.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspaero.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vsploads.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspscript.exe `
@@ -190,7 +190,7 @@ jobs:
     - name: Generate Documentation
       if: matrix.config.os == 'ubuntu-20.04'
       shell: bash
-      run:    |
+      run:   |
         cd build
         cd vsp
         ./vsp -doc
