@@ -132,15 +132,17 @@ jobs:
         certutil -addstore Root certificate\certCER.cer
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe `
-        $env:GITHUB_WORKSPACE\build\vsp_aero\Solver\Release\vspaero.exe `
-        $env:GITHUB_WORKSPACE\build\vsp_aero\Adb2Load\Release\vsploads.exe `
-        $env:GITHUB_WORKSPACE\build\vsp\Release\vspscript.exe `
-        $env:GITHUB_WORKSPACE\build\vsp_aero\Viewer\Release\vspviewer.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsp.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspaero.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsploads.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspscript.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspviewer.exe
 
-        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\vsp\Release\vsp.exe $env:GITHUB_WORKSPACE\build\vsp_aero\Solver\Release\vspaero.exe `
-        $env:GITHUB_WORKSPACE\build\vsp_aero\Adb2Load\Release\vsploads.exe $env:GITHUB_WORKSPACE\build\vsp\Release\vspscript.exe `
-        $env:GITHUB_WORKSPACE\build\vsp_aero\Viewer\Release\vspviewer.exe
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsp.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspaero.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsploads.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspscript.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspviewer.exe
 
         Remove-Item -Recurse -Force certificate
 
