@@ -147,6 +147,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash
       run:   |
+        cd $GITHUB_WORKSPACE\\build
         make package
         ZIPFILE=OpenVSP*.zip
         VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
@@ -157,7 +158,7 @@ jobs:
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
 
         ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1)
-        
+
     # - name:  Build MacOS
     #   if: runner.os == 'macos'
     #   shell: bash
