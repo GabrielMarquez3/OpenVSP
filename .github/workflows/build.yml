@@ -114,9 +114,11 @@ jobs:
         
         unzip OpenVSP*.zip
         ls
+        cd OpenVSP-3.31.1-win64
+        ls
 
     # add a verification step
-    - name:  Sign Build
+    - name:  Sign Build Windows
       env: 
         CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
         CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
@@ -133,18 +135,35 @@ jobs:
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsp.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspaero.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsploads.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspscript.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspviewer.exe
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspaero.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vsploads.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspscript.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspviewer.exe
 
         & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsp.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspaero.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vsploads.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspscript.exe `
-        $env:GITHUB_WORKSPACE\build\OpenVSP*\OpenVSP*\vspviewer.exe
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspaero.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vsploads.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspscript.exe `
+        $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspviewer.exe
 
         Remove-Item -Recurse -Force certificate
+
+    - name:   Deploy Build Windows
+      if: runner.os == 'Windows'
+      shell: bash
+      run:   |
+        cd $GITHUB_WORKSPACE\\build
+        zip OpenVSP-3.31.1-win64.zip OpenVSP-3.31.1-win64
+
+        ZIPFILE=OpenVSP*.zip
+        VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
+        WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
+        
+        DEPLOY_FILE=OpenVSP-${VSPVER}-${WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
+        cp $ZIPFILE $DEPLOY_FILE
+        cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
+        
+        ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1)
 
     # - name:  Build MacOS
     #   if: runner.os == 'macos'
