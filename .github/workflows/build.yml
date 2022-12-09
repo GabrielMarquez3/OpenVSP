@@ -146,6 +146,9 @@ jobs:
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspscript.exe `
         $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64\vspviewer.exe
 
+        Compress-Archive -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 `
+        -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64.zip
+
         Remove-Item -Recurse -Force certificate
 
     - name:   Deploy Build Windows
@@ -153,8 +156,7 @@ jobs:
       shell: bash
       run:   |
         cd $GITHUB_WORKSPACE\\build
-        zip OpenVSP-3.31.1-win64.zip OpenVSP-3.31.1-win64
-
+        
         ZIPFILE=OpenVSP*.zip
         VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
         WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
