@@ -132,10 +132,10 @@ jobs:
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
 
         Get-ChildItem -Path .\ -Filter *.exe -Recurse -File| ForEach-Object {
-          $signtool sign /fd sha256 /f certificate\certificate.pfx $_.FullName
+          & $signtool sign /fd sha256 /f certificate\certificate.pfx $_.FullName
           & signtool verify /pa $_.FullName
         }
-        
+
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64.zip
 
