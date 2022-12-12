@@ -128,14 +128,11 @@ jobs:
         certutil -decode certificate\certCER.txt certificate\certCER.cer
 
         certutil -addstore Root certificate\certCER.cer
-        
+
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
 
         Get-ChildItem -Path $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 -Filter *.exe -File| ForEach-Object {
-
-          & $signtool sign /fd sha256 /f certificate\certificate.pfx $_.FullName
-          & signtool verify /pa $_.FullName
-
+          $_.FullName
         }
 
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 `
