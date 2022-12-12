@@ -11,6 +11,8 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     env:
       BUILD_ARCH: ${{ matrix.config.arch }}
+      ENV_VSPVER: '3.31.1'
+      ENV_WINVER: win64
     strategy:
       fail-fast: false
       matrix:
@@ -111,7 +113,12 @@ jobs:
 
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
         cmake --build . --target package --config Release -j 2
-        
+
+        VSPVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $2 }')
+        WINVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
+
+        $ENV_VSPVER = $VSPVER
+        $ENV_WINVER = $WINVER
         unzip OpenVSP*.zip
 
     - name:  Sign Build Windows
@@ -131,9 +138,9 @@ jobs:
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
 
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP*\*.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-${ENV_VSPVER}-${ENV_WINVER}\*.exe
 
-        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP*\*.exe
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-${ENV_VSPVER}-${ENV_WINVER}\*.exe
 
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64.zip
@@ -147,10 +154,8 @@ jobs:
         cd $GITHUB_WORKSPACE\\build
 
         ZIPFILE=OpenVSP*.zip
-        VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
-        WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
         
-        DEPLOY_FILE=OpenVSP-${VSPVER}-${WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
+        DEPLOY_FILE=OpenVSP-${ENV_VSPVER}-${ENV_WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
         cp $ZIPFILE $DEPLOY_FILE
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
         
