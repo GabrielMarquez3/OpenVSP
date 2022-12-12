@@ -129,7 +129,7 @@ jobs:
 
         certutil -addstore Root certificate\certCER.cer
 
-        Get-ChildItem -Path .\ -Filter *.exe -File| ForEach-Object {
+        Get-ChildItem -Path $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 -Filter *.exe -File| ForEach-Object {
 
           $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
           & $signtool sign /fd sha256 /f certificate\certificate.pfx $_.FullName
