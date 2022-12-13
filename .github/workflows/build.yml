@@ -116,9 +116,7 @@ jobs:
 
         VSPVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $2 }')
         WINVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
-
-        $ENV_VSPVER = $VSPVER
-        $ENV_WINVER = $WINVER
+        
         unzip OpenVSP*.zip
 
     - name:  Sign Build Windows
