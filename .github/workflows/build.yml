@@ -116,10 +116,8 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
         cmake --build . --target package --config Release -j 2
 
-        VSPVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $2 }')
-        WINVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
-
-        $ENV_VSPVER = $VSPVER
+        VSPVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $2 }') >> $GITHUB_ENV
+        WINVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' ) >> $GITHUB_ENV
 
         unzip OpenVSP*.zip
 
@@ -146,6 +144,8 @@ jobs:
 
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64.zip
+
+        echo "${{env.VSPVER}}"
 
         Remove-Item -Recurse -Force certificate
 
