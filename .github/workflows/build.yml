@@ -140,8 +140,8 @@ jobs:
 
         & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-$env:ENV_VSPVER-$env:ENV_WINVER\*.exe
 
-        Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 `
-        -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64.zip
+        Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}} `
+        -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}.zip
 
         Remove-Item -Recurse -Force certificate
 
