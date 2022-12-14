@@ -6,9 +6,9 @@ on:
     branches: TestBuild
 
 env:
-   ENV_VSPVER: '3.31.1'
-    ENV_WINVER: win64
-    
+  ENV_VSPVER: '3.31.1'
+  ENV_WINVER: win64
+
 jobs:
   build:
     name: ${{ matrix.config.name }}
