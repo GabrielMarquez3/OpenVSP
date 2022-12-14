@@ -5,14 +5,16 @@ on:
     # branches: build
     branches: TestBuild
 
+env:
+   ENV_VSPVER: '3.31.1'
+    ENV_WINVER: win64
+    
 jobs:
   build:
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
     env:
       BUILD_ARCH: ${{ matrix.config.arch }}
-      ENV_VSPVER: '3.31.1'
-      ENV_WINVER: win64
     strategy:
       fail-fast: false
       matrix:
@@ -116,7 +118,7 @@ jobs:
 
         VSPVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $2 }')
         WINVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
-        
+
         unzip OpenVSP*.zip
 
     - name:  Sign Build Windows
