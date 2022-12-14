@@ -121,8 +121,8 @@ jobs:
       env: 
         CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
         CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
-        ENV_VSPVER: ${{env.VSPVER}}
-        ENV_WINVER: ${{env.WINVER}}
+        ENV_VSPVER: '3.31.1'
+        ENV_WINVER: win64
       if: runner.os == 'Windows'
       shell: pwsh
       run:   |
