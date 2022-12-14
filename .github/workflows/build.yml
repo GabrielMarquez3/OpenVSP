@@ -138,9 +138,9 @@ jobs:
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
 
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-$ENV_VSPVER-$ENV_WINVER\*.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-$env:ENV_VSPVER-$env:ENV_WINVER\*.exe
 
-        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-$ENV_VSPVER-$ENV_WINVER\*.exe
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-$env:ENV_VSPVER-$env:ENV_WINVER\*.exe
 
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64 `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-3.31.1-win64.zip
