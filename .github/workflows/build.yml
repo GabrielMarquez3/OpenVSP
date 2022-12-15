@@ -136,9 +136,9 @@ jobs:
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
 
-        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-$env:ENV_VSPVER-$env:ENV_WINVER\*.exe
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.exe
 
-        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-$env:ENV_VSPVER-$env:ENV_WINVER\*.exe
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.exe
 
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}} `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}.zip
@@ -156,7 +156,7 @@ jobs:
 
         ZIPFILE=OpenVSP*.zip
         
-        DEPLOY_FILE=OpenVSP-${ENV_VSPVER}-${ENV_WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
+        DEPLOY_FILE=OpenVSP-${{env.VSPVER}}-${{env.WINVER}}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
         cp $ZIPFILE $DEPLOY_FILE
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
         
