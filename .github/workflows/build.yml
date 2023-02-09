@@ -123,8 +123,7 @@ jobs:
         CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
         ENV_VSPVER: ${{env.VSPVER}}
         ENV_WINVER: ${{env.WINVER}}
-      if: runner.os == 'Windows' 
-      if: ${{ env.CODESIGN_BASE64CER != '' }}
+      if: ${{ (runner.os == 'Windows') && (env.CODESIGN_BASE64CER != '') }}
       shell: pwsh
       run:   |
         New-Item -ItemType directory -Path certificate
