@@ -119,11 +119,11 @@ jobs:
 
     - name:  Sign Build Windows
       env: 
-        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE}}
+        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE }}
         CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
         ENV_VSPVER: ${{env.VSPVER}}
         ENV_WINVER: ${{env.WINVER}}
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && ${{ secrets.WINDOWS_CER }}
       shell: pwsh
       run:   |
         New-Item -ItemType directory -Path certificate
@@ -138,7 +138,11 @@ jobs:
 
         & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.exe
 
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.dll
+
         & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.exe
+
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.dll
 
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}} `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}.zip
