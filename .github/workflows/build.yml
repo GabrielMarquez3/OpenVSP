@@ -123,7 +123,7 @@ jobs:
         CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
         ENV_VSPVER: ${{env.VSPVER}}
         ENV_WINVER: ${{env.WINVER}}
-      if: $env:CODESIGN_BASE64
+      if: ${{env.CODESIGN_BASE64 }}
       shell: pwsh
       run:   |
         New-Item -ItemType directory -Path certificate
