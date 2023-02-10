@@ -117,20 +117,20 @@ jobs:
 
         unzip OpenVSP*.zip
 
+    # certutil -decode certificate\certCER.txt certificate\certCER.cer
+    # Set-Content -Path certificate\certCER.txt -Value $env:CODESIGN_BASE64CER
     - name:  Sign Build Windows
       env: 
         CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE }}
         CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
         ENV_VSPVER: ${{env.VSPVER}}
         ENV_WINVER: ${{env.WINVER}}
-      if: ${{ (runner.os == 'Windows') && (env.CODESIGN_BASE64CER != '') }}
+      if: ${{ (runner.os == 'Windows') && (env.CODESIGN_BASE64 != '') }}
       shell: pwsh
       run:   |
         New-Item -ItemType directory -Path certificate
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
-        Set-Content -Path certificate\certCER.txt -Value $env:CODESIGN_BASE64CER
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
-        certutil -decode certificate\certCER.txt certificate\certCER.cer
 
         certutil -addstore Root certificate\certCER.cer
 
