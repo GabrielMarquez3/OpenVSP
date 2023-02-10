@@ -144,10 +144,17 @@ jobs:
 
         & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.dll
 
+        Remove-Item -Recurse -Force certificate
+
+    - name:   Re-Zip Windows Build
+      if: runner.os == 'Windows'
+      env: 
+        ENV_VSPVER: ${{env.VSPVER}}
+        ENV_WINVER: ${{env.WINVER}}
+      shell: bash
+      run:   |
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}} `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}.zip
-
-        Remove-Item -Recurse -Force certificate
 
     - name:   Deploy Build Windows
       if: runner.os == 'Windows'
