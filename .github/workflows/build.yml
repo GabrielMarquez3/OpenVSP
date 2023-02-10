@@ -117,8 +117,6 @@ jobs:
 
         unzip OpenVSP*.zip
 
-    # certutil -decode certificate\certCER.txt certificate\certCER.cer
-    # Set-Content -Path certificate\certCER.txt -Value $env:CODESIGN_BASE64CER
     - name:  Sign Build Windows
       env: 
         CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE }}
@@ -131,8 +129,10 @@ jobs:
         New-Item -ItemType directory -Path certificate
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
-
-        certutil -addstore Root certificate\certificate.pfx
+        Set-Content -Path certificate\certCER.txt -Value $env:CODESIGN_BASE64CER
+        certutil -decode certificate\certCER.txt certificate\certCER.cer
+        
+        certutil -addstore Root certificate\certificate\certCER.cer
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
 
