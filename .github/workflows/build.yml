@@ -132,7 +132,7 @@ jobs:
         Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
         certutil -decode certificate\certificate.txt certificate\certificate.pfx
 
-        certutil -addstore Root certificate\certCER.cer
+        certutil -addstore Root certificate\certificate.pfx
 
         $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
 
