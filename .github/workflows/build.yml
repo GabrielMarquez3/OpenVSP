@@ -151,7 +151,7 @@ jobs:
       env: 
         ENV_VSPVER: ${{env.VSPVER}}
         ENV_WINVER: ${{env.WINVER}}
-      shell: bash
+      shell: pwsh
       run:   |
         Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}} `
         -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}.zip
