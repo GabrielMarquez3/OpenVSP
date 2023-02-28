@@ -2,7 +2,8 @@ name: CMake Build Matrix
 
 on:
   push:
-    branches: build
+    # branches: build
+    branches: TestBuild
 
 jobs:
   build:
@@ -13,7 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.9] # specify more python versions here (i.e. 3.9)
+        # python-version: [3.6, 3.9] # specify more python versions here (i.e. 3.6,3.9)
+        python-version: [3.9] # specify more python versions here (i.e. 3.9)
         config:
         - {
             name: "Windows 64",
@@ -21,24 +23,24 @@ jobs:
             arch: x64,
             python-arch: x64,
           }
-        - {
-            name: "Ubuntu 20.04",
-            os: ubuntu-20.04,
-            arch: x64,
-            python-arch: x64,
-          }
-        - {
-            name: "Ubuntu 22.04",
-            os: ubuntu-22.04,
-            arch: x64,
-            python-arch: x64,
-          }
-        - {
-            name: "macOS 11",
-            os: macos-11,
-            arch: x64,
-            python-arch: x64,
-          }
+        # - {
+        #     name: "Ubuntu 20.04",
+        #     os: ubuntu-20.04,
+        #     arch: x64,
+        #     python-arch: x64,
+        #   }
+        # - {
+        #     name: "Ubuntu 22.04",
+        #     os: ubuntu-22.04,
+        #     arch: x64,
+        #     python-arch: x64,
+        #   }
+        # - {
+        #     name: "macOS 11",
+        #     os: macos-11,
+        #     arch: x64,
+        #     python-arch: x64,
+        #   }
 
     steps:
     - name: Checkout
@@ -51,47 +53,47 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.config.python-arch }}
 
-    - name:  Install Linux
-      if: runner.os == 'Linux'
-      shell: bash
-      run:   |
-        sudo apt-get update
-        sudo apt-get install python3-dev libxml2-dev libfltk1.3-dev fluid libjpeg-dev libglm-dev libcminpack-dev libglew-dev swig doxygen graphviz texlive-latex-base zip
+    # - name:  Install Linux
+    #   if: runner.os == 'Linux'
+    #   shell: bash
+    #   run:   |
+    #     sudo apt-get update
+    #     sudo apt-get install python3-dev libxml2-dev libfltk1.3-dev fluid libjpeg-dev libglm-dev libcminpack-dev libglew-dev swig doxygen graphviz texlive-latex-base zip
 
     - name:  Install Windows
       if: runner.os == 'Windows'
       shell: cmd
       run:   choco install -y swig
 
-    - name:  Install MacOS
-      if: runner.os == 'macos'
-      shell: bash
-      run:   brew install swig gcc@10
+    # - name:  Install MacOS
+    #   if: runner.os == 'macos'
+    #   shell: bash
+    #   run:   brew install swig gcc@10
 
-    - name:  Build Linux
-      if: runner.os == 'Linux'
-      shell: bash
-      run:   |
-        mkdir build buildlibs artifacts
-        cd $GITHUB_WORKSPACE/buildlibs
-        cmake -DCMAKE_BUILD_TYPE=Release -DVSP_USE_SYSTEM_LIBXML2=true -DVSP_USE_SYSTEM_FLTK=true -DVSP_USE_SYSTEM_GLM=true -DVSP_USE_SYSTEM_GLEW=true -DVSP_USE_SYSTEM_CMINPACK=true -DVSP_USE_SYSTEM_CPPTEST=false ../Libraries
-        make -j2
+    # - name:  Build Linux
+    #   if: runner.os == 'Linux'
+    #   shell: bash
+    #   run:   |
+    #     mkdir build buildlibs artifacts
+    #     cd $GITHUB_WORKSPACE/buildlibs
+    #     cmake -DCMAKE_BUILD_TYPE=Release -DVSP_USE_SYSTEM_LIBXML2=true -DVSP_USE_SYSTEM_FLTK=true -DVSP_USE_SYSTEM_GLM=true -DVSP_USE_SYSTEM_GLEW=true -DVSP_USE_SYSTEM_CMINPACK=true -DVSP_USE_SYSTEM_CPPTEST=false ../Libraries
+    #     make -j2
         
-        cd $GITHUB_WORKSPACE/build
-        cmake -DCMAKE_BUILD_TYPE=Release -DVSP_CPACK_GEN=DEB -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE/buildlibs ../src
-        make -j2 package
+    #     cd $GITHUB_WORKSPACE/build
+    #     cmake -DCMAKE_BUILD_TYPE=Release -DVSP_CPACK_GEN=DEB -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE/buildlibs ../src
+    #     make -j2 package
         
-        DEBFILE=${GITHUB_WORKSPACE}/build/OpenVSP-*-Linux.deb
-        VSPVER=$(ls $DEBFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
-        UVER=$(lsb_release -sr)
-        DEPLOY_FILE=${GITHUB_WORKSPACE}/build/OpenVSP-${VSPVER}-Ubuntu-${UVER}_amd64_${GITHUB_SHA}.deb
+    #     DEBFILE=${GITHUB_WORKSPACE}/build/OpenVSP-*-Linux.deb
+    #     VSPVER=$(ls $DEBFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
+    #     UVER=$(lsb_release -sr)
+    #     DEPLOY_FILE=${GITHUB_WORKSPACE}/build/OpenVSP-${VSPVER}-Ubuntu-${UVER}_amd64_${GITHUB_SHA}.deb
         
-        cp $DEBFILE $DEPLOY_FILE
-        cp $DEPLOY_FILE $GITHUB_WORKSPACE/artifacts
+    #     cp $DEBFILE $DEPLOY_FILE
+    #     cp $DEPLOY_FILE $GITHUB_WORKSPACE/artifacts
         
-        ls $DEPLOY_FILE && (echo "DEB CREATION SUCCESSFUL" && exit 0) || (echo "DEB CREATION FAILED" && exit 1)
+    #     ls $DEPLOY_FILE && (echo "DEB CREATION SUCCESSFUL" && exit 0) || (echo "DEB CREATION FAILED" && exit 1)
 
-    - name:  Build Windows
+    - name:  Build Libraries Windows
       if: runner.os == 'Windows'
       shell: bash
       run:   |
@@ -100,48 +102,103 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release -A $BUILD_ARCH ..\\Libraries
 
         cmake --build . --config Release -j 2
+  
+    - name:  Build Windows 
+      if: runner.os == 'Windows'
+      shell: bash
+      run:   |
         cd $GITHUB_WORKSPACE\\build
 
         cmake -DCMAKE_BUILD_TYPE=Release -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE\\buildlibs -A $BUILD_ARCH ..\\src
-
         cmake --build . --target package --config Release -j 2
 
-        ZIPFILE=OpenVSP*.zip
-        VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
-        WINVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )
+        echo "VSPVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $2 }')" >> $GITHUB_ENV
+        echo "WINVER=$(ls OpenVSP*.zip | awk 'BEGIN { FS = "-" } ; { print $3 }' | awk 'BEGIN { FS = "." } ; { print $1 }' )" >> $GITHUB_ENV
+
+        unzip OpenVSP*.zip
+
+    - name:  Sign Build Windows
+      env: 
+        CODESIGN_BASE64: ${{ secrets.WINDOWS_CERTIFICATE }}
+        CODESIGN_BASE64CER: ${{ secrets.WINDOWS_CER}}
+        ENV_VSPVER: ${{env.VSPVER}}
+        ENV_WINVER: ${{env.WINVER}}
+      if: ${{ (runner.os == 'Windows') && (env.CODESIGN_BASE != '')  && (env.CODESIGN_BASE64CER != '')}}
+      shell: pwsh
+      run:   |
+        New-Item -ItemType directory -Path certificate
+        Set-Content -Path certificate\certificate.txt -Value $env:CODESIGN_BASE64
+        certutil -decode certificate\certificate.txt certificate\certificate.pfx
+        Set-Content -Path certificate\certCER.txt -Value $env:CODESIGN_BASE64CER
+        certutil -decode certificate\certCER.txt certificate\certCER.cer
         
-        DEPLOY_FILE=OpenVSP-${VSPVER}-${WINVER}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
+        certutil -addstore Root certificate\certCER.cer
+
+        $signtool = "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe"
+
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.exe
+
+        & $signtool sign /fd sha256 /f certificate\certificate.pfx $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.dll
+
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.exe
+
+        & $signtool verify /pa $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}\*.dll
+
+        Remove-Item -Recurse -Force certificate
+
+    - name:   Re-Zip Windows Build
+      if: runner.os == 'Windows'
+      env: 
+        ENV_VSPVER: ${{env.VSPVER}}
+        ENV_WINVER: ${{env.WINVER}}
+      shell: pwsh
+      run:   |
+        Compress-Archive -Update -LiteralPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}} `
+        -DestinationPath $env:GITHUB_WORKSPACE\build\OpenVSP-${{env.VSPVER}}-${{env.WINVER}}.zip
+
+    - name:   Deploy Build Windows
+      if: runner.os == 'Windows'
+      env: 
+        ENV_VSPVER: ${{env.VSPVER}}
+        ENV_WINVER: ${{env.WINVER}}
+      shell: bash
+      run:   |
+        cd $GITHUB_WORKSPACE\\build
+
+        ZIPFILE=OpenVSP*.zip
+        
+        DEPLOY_FILE=OpenVSP-${{env.VSPVER}}-${{env.WINVER}}-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
         cp $ZIPFILE $DEPLOY_FILE
         cp $DEPLOY_FILE $GITHUB_WORKSPACE\\artifacts
         
         ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1)
 
-    - name:  Build MacOS
-      if: runner.os == 'macos'
-      shell: bash
-      run:   |
-        mkdir build buildlibs artifacts
-        cd $GITHUB_WORKSPACE/buildlibs
-        cmake -DCMAKE_BUILD_TYPE=Release ../Libraries -DADEPT_CXX_COMPILER=/usr/local/bin/g++-10 -DADEPT_C_COMPILER=/usr/local/bin/gcc-10
-        make -j2
+    # - name:  Build MacOS
+    #   if: runner.os == 'macos'
+    #   shell: bash
+    #   run:   |
+    #     mkdir build buildlibs artifacts
+    #     cd $GITHUB_WORKSPACE/buildlibs
+    #     cmake -DCMAKE_BUILD_TYPE=Release ../Libraries -DADEPT_CXX_COMPILER=/usr/local/bin/g++-10 -DADEPT_C_COMPILER=/usr/local/bin/gcc-10
+    #     make -j2
         
-        cd $GITHUB_WORKSPACE/build
-        cmake -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE/buildlibs -DCXX_OMP_COMPILER=/usr/local/bin/g++-10 -DC_OMP_COMPILER=/usr/local/bin/gcc-10 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="~/OpenVSP_Install" ../src;
-        make -j2 package
+    #     cd $GITHUB_WORKSPACE/build
+    #     cmake -DVSP_LIBRARY_PATH=$GITHUB_WORKSPACE/buildlibs -DCXX_OMP_COMPILER=/usr/local/bin/g++-10 -DC_OMP_COMPILER=/usr/local/bin/gcc-10 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="~/OpenVSP_Install" ../src;
+    #     make -j2 package
         
-        ZIPFILE=${GITHUB_WORKSPACE}/build/OpenVSP-*-MacOS.zip
-        VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
-        DEPLOY_FILE=${GITHUB_WORKSPACE}/build/OpenVSP-${VSPVER}-MacOS-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
+    #     ZIPFILE=${GITHUB_WORKSPACE}/build/OpenVSP-*-MacOS.zip
+    #     VSPVER=$(ls $ZIPFILE | awk 'BEGIN { FS = "-" } ; { print $2 }')
+    #     DEPLOY_FILE=${GITHUB_WORKSPACE}/build/OpenVSP-${VSPVER}-MacOS-Python${{ matrix.python-version }}_${GITHUB_SHA}.zip
         
-        cp $ZIPFILE $DEPLOY_FILE
-        cp $DEPLOY_FILE $GITHUB_WORKSPACE/artifacts
+    #     cp $ZIPFILE $DEPLOY_FILE
+    #     cp $DEPLOY_FILE $GITHUB_WORKSPACE/artifacts
         
-        ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1)
+    #     ls $DEPLOY_FILE && (echo "ZIP CREATION SUCCESSFUL" && exit 0) || (echo "ZIP CREATION FAILED" && exit 1)
 
     - name: Generate Documentation
       if: matrix.config.os == 'ubuntu-20.04'
       shell: bash
-      run:    |
+      run:   |
         cd build
         cd vsp
         ./vsp -doc
